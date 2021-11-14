@@ -19,6 +19,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install git git2cl lintian
 
+    - name: Show info
+      run: make info
+      
     - name: Create deb package
       run: make deb
       
