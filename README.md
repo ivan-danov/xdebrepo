@@ -6,45 +6,45 @@ Custom signed debian repository organizer
 make deb
 
 ## Install deb package
-apt install ./xdebrpo_<VERSION>_all.deb
+apt install ./xdebrpo\_&lt;VERSION&gt;\_all.deb
 
-## Use program
+## Use xdebrpo
 
-**xdebrepo** init <repo path> <conf path>
+**xdebrepo** init &lt;repo path&gt; &lt;conf path&gt;<br/>
 Init xdebrpo. Create /etc/xdebrepo/xdebrepo.conf.
 
-**xdebrepo** key gen <gpg dir> <owner name> <owner email>
-Generate GnuPG key. <gpg dir> is relative to <conf path>.
+**xdebrepo** key gen &lt;gpg dir&gt; &lt;owner name&gt; &lt;owner email&gt;<br/>
+Generate GnuPG key. &lt;gpg dir&gt; is relative to &lt;conf path&gt;.
 
-**xdebrepo** key list <gpg dir>
-List generated GnuPG key. <gpg dir> is relative to <conf path>.
+**xdebrepo** key list &lt;gpg dir&gt;<br/>
+List generated GnuPG key. &lt;gpg dir&gt; is relative to &lt;conf path&gt;.
 
-**xdebrepo** repo create <repodir> <gpg dir> <key>
-Create a new repository.
-<repodir> is relative to <repo path>.
-<gpg dir> is relative to <conf path>.
-<key> is a GnuPG key id to sign repository.
+**xdebrepo** repo create &lt;repodir&gt; &lt;gpg dir&gt; &lt;key&gt;<br/>
+Create a new repository.<br/>
+&lt;repodir&gt; is relative to &lt;repo path&gt;.<br/>
+&lt;gpg dir&gt; is relative to &lt;conf path&gt;.<br/>
+&lt;key&gt; is a GnuPG key id to sign repository.<br/>
 
-**xdebrepo** repo repo destroy <repodir>
-Destroy repository.
-<repodir> is relative to <repo path>.
+**xdebrepo** repo repo destroy &lt;repodir&gt;<br/>
+Destroy repository.<br/>
+&lt;repodir&gt; is relative to &lt;repo path&gt;.<br/>
 
-**xdebrepo** repo aptconf <repodir>"
-Generate apt config file for repository.
-<repodir> is relative to <repo path>.
+**xdebrepo** repo aptconf &lt;repodir&gt;"<br/>
+Generate apt config file for repository.<br/>
+&lt;repodir&gt; is relative to &lt;repo path&gt;.<br/>
 
-**xdebrepo** repo pubkey <repodir>"
-Show public key for repository.
-<repodir> is relative to <repo path>.
+**xdebrepo** repo pubkey &lt;repodir&gt;"<br/>
+Show public key for repository.<br/>
+&lt;repodir&gt; is relative to &lt;repo path&gt;.<br/>
 
-**xdebrepo** repo add <repodir> <distname> <deb file>"
-Add a deb file to repository.
-<repodir> is relative to <repo path>.
+**xdebrepo** repo add &lt;repodir&gt; &lt;distname&gt; &lt;deb file&gt;"<br/>
+Add a deb file to repository.<br/>
+&lt;repodir&gt; is relative to &lt;repo path&gt;.<br/>
 
-**xdebrepo** repo del <repodir> <distname> <package name>"
-Delete package from repository.
-<repodir> is relative to <repo path>.
+**xdebrepo** repo del &lt;repodir&gt; &lt;distname&gt; &lt;package name&gt;"<br/>
+Delete package from repository.<br/>
+&lt;repodir&gt; is relative to &lt;repo path&gt;.<br/>
 
-**xdebrepo** repo list <repodir> [distname]
-List packages in repository.
-<repodir> is relative to <repo path>.
+**xdebrepo** repo list &lt;repodir&gt; [distname]<br/>
+List packages in repository.<br/>
+&lt;repodir&gt; is relative to &lt;repo path&gt;.<br/>
