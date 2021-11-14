@@ -1,0 +1,62 @@
+# bash xdebrepo completion
+
+have xdebrepo &&
+_xdebrepo()
+{
+	local cur conns
+
+	[ -f /etc/xdebrepo/xdebrepo.conf ] || return 0
+
+	COMPREPLY=()
+	cur=${COMP_WORDS[COMP_CWORD]}
+
+	if [ $COMP_CWORD -eq 1 ]; then
+		conns="init key repo"
+		COMPREPLY=( $(compgen -W "$conns" $cur) )
+		return 0
+	fi
+
+	if [ $COMP_CWORD -eq 2 ]; then
+		if [ "${COMP_WORDS[1]}" == "init" ]; then
+			return 0
+		fi
+		if [ "${COMP_WORDS[1]}" == "key" ]; then
+			conns="gen list"
+			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			return 0
+		fi
+		if [ "${COMP_WORDS[1]}" == "repo" ]; then
+			conns="create destroy aptconf pubkey add del list"
+			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			return 0
+		fi
+		return 0
+	fi
+	if [ $COMP_CWORD -eq 3 ]; then
+		if [ "${COMP_WORDS[1]}" == "repo" ]; then
+			if [ "${COMP_WORDS[2]}" == "create" ]; then
+				return 0
+			fi
+			source /etc/xdebrepo/xdebrepo.conf
+			conns=$(\find ${XDEBREPO_CONF_PATH} -name repo.conf -exec bash -c "realpath --relative-to=${XDEBREPO_CONF_PATH} {}|xargs dirname " \;)
+			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			return 0
+		fi
+		return 0
+	fi
+	if [ $COMP_CWORD -eq 4 ]; then
+		if [ "${COMP_WORDS[1]}" != "repo" ]; then
+			return 0
+		fi
+		if [ "${COMP_WORDS[2]}" != "list" ]; then
+			return 0
+		fi
+		source /etc/xdebrepo/xdebrepo.conf
+		conns=$(\cat ${XDEBREPO_PATH}/${COMP_WORDS[3]}/conf/distributions 2>/dev/null| awk '/Codename:/ {printf "%s\n", $2}')
+		COMPREPLY=( $(compgen -W "$conns" $cur) )
+		return 0
+	fi
+	return 0
+}
+[ "$have" ] &&
+complete -F _xdebrepo xdebrepo

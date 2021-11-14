@@ -1,0 +1,28 @@
+.TH xdebrepo 1 "2021" "xdebrepo v1.0.523+a264e40" "xdebrepo manual"
+.SH NAME
+xdebrepo \- custom debian depository organizer
+.SH SYNOPSIS
+.sp
+.nf
+\fIxdebrepo\fR init <repo path> <conf path>
+
+\fIxdebrepo\fR key gen <gpg dir> <owner name> <owner email>
+\fIxdebrepo\fR key list <gpg dir>
+
+\fIxdebrepo\fR repo create <repodir> <gpg dir> <key>
+\fIxdebrepo\fR repo repo destroy <repodir>
+
+\fIxdebrepo\fR repo aptconf <repodir>"
+\fIxdebrepo\fR repo pubkey <repodir>"
+\fIxdebrepo\fR repo add <repodir> <distname> <deb file>"
+\fIxdebrepo\fR repo del <repodir> <distname> <package name>"
+\fIxdebrepo\fR repo list <repodir> [distname]"
+.fi
+.sp
+.SH DESCRIPTION
+.sp
+.B xdebrepo
+
+.RS
+.SH AUTHOR
+(c) 2021 Ivan Danov
