@@ -1,0 +1,32 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: configure
+      run: ./configure
+      
+    - name: Create deb package
+      run: make deb
+      
+    - name: Display artifacts
+      run: ls -R xdebrepo_*_all.deb
+      working-directory: .
+
+    - name: Save artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: xdebrepo
+        path: xdebrepo_*_all.deb
+        
