@@ -72,6 +72,7 @@ info:
 	$(Q)echo "    Project version: $(PROJECT_VERSION)"
 	${Q}echo "   DEB Package name: $(FINAL_DEBNAME)"
 	git rev-list --count $(GIT_BRANCH)
+	git rev-list --count HEAD
 
 version:
 	${Q}echo "$(PROJECT_VERSION)"
