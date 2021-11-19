@@ -26,7 +26,7 @@ _xdebrepo()
 			return 0
 		fi
 		if [ "${COMP_WORDS[1]}" == "repo" ]; then
-			conns="create destroy aptconf pubkey add del list"
+			conns="create destroy ls aptconf pubkey add del list"
 			COMPREPLY=( $(compgen -W "$conns" $cur) )
 			return 0
 		fi
