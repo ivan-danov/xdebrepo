@@ -169,6 +169,11 @@ define deb_func
 	${Q}mkdir -p $(DEBDIR)/usr/bin
 	${Q}cp xdebrepo $(DEBDIR)/usr/bin/xdebrepo
 	${Q}chmod 0755 $(DEBDIR)/usr/bin/xdebrepo
+
+	${Q}mkdir -p $(DEBDIR)/usr/share/bash-completion/completions
+	${Q}cp xdebrepo.bash_completion $(DEBDIR)/usr/share/bash-completion/completions/xdebrepo
+	${Q}chmod 0644 $(DEBDIR)/usr/share/bash-completion/completions/xdebrepo
+
 	$(call deb_control)
 	$(call deb_end)
 	$(Q)rm -r $(DEBDIR)
