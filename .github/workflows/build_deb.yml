@@ -54,6 +54,9 @@ jobs:
         tag=$(make info)
         echo "::set-output name=tag::$tag"
 
+    - uses: actions/download-artifact@v1
+      with:
+        name: info
     - name: Set upload_url
       id: upload_info
       run: |
