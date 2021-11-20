@@ -14,11 +14,16 @@ xdebrepo \- custom debian depository organizer
 \fIxdebrepo\fR repo repo destroy <repodir>
 \fIxdebrepo\fR repo repo ls
 
-\fIxdebrepo\fR repo aptconf <repodir>"
-\fIxdebrepo\fR repo pubkey <repodir>"
-\fIxdebrepo\fR repo add <repodir> <distname> <deb file>"
-\fIxdebrepo\fR repo del <repodir> <distname> <package name>"
-\fIxdebrepo\fR repo list <repodir> [distname]"
+\fIxdebrepo\fR repo aptconf <repodir>
+\fIxdebrepo\fR repo pubkey <repodir>
+\fIxdebrepo\fR repo add <repodir> <distname> <deb file>
+\fIxdebrepo\fR repo del <repodir> <distname> <package name>
+\fIxdebrepo\fR repo list <repodir> [distname]
+\fIxdebrepo\fR repo dists <repodir>
+\fIxdebrepo\fR repo ssh_config <repodir>
+
+\fIxdebrepo\fR ssh add_publish_key <repodir>
+\fIxdebrepo\fR ssh add_apt_key <repodir>
 .fi
 .sp
 .SH DESCRIPTION

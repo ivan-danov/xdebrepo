@@ -27,7 +27,12 @@ _xdebrepo()
 			return 0
 		fi
 		if [ "${COMP_WORDS[1]}" == "repo" ]; then
-			conns="create destroy ls aptconf pubkey add del list"
+			conns="create destroy ls aptconf pubkey add del list dists ssh_config"
+			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			return 0
+		fi
+		if [ "${COMP_WORDS[1]}" == "ssh" ]; then
+			conns="add_publish_key add_apt_key"
 			COMPREPLY=( $(compgen -W "$conns" $cur) )
 			return 0
 		fi
@@ -45,6 +50,11 @@ _xdebrepo()
 			if [ "${COMP_WORDS[2]}" == "create" ]; then
 				return 0
 			fi
+			conns=$(xdebrepo repo ls)
+			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			return 0
+		fi
+		if [ "${COMP_WORDS[1]}" == "ssh" ]; then
 			conns=$(xdebrepo repo ls)
 			COMPREPLY=( $(compgen -W "$conns" $cur) )
 			return 0
