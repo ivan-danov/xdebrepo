@@ -1,3 +1,5 @@
+![status](https://github.com/ivan-danov/xdebrepo/actions/workflows/build_deb.yml/badge.svg)
+
 # XDebRepo
 
 Custom signed debian repository organizer
