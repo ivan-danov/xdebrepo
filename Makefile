@@ -184,6 +184,9 @@ deb:
 	$(call deb_func)
 	@echo $(BEERSYM)$(PROJECT) deb done.
 
+debname:
+	@echo $(FINAL_DEBNAME)
+
 # to execute after cleaning all.
 define clean_done_func
 	$(Q)$(RM) -r $(DEBDIR) $(PROJECT)_*_$(ARCH).deb
