@@ -62,6 +62,10 @@ _xdebrepo()
 		return 0
 	fi
 	if [ $COMP_CWORD -eq 4 ]; then
+		if [ "${COMP_WORDS[1]}" == "ssh" ]; then
+			_filedir
+			return 0
+		fi
 		if [ "${COMP_WORDS[1]}" != "repo" ]; then
 			return 0
 		fi
