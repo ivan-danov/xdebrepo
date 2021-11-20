@@ -5,16 +5,6 @@ _xdebrepo()
 	local cur conns
 	_init_completion -s || return
 
-	if [ -f /etc/xdebrepo/xdebrepo.conf ]; then
-		if [ $COMP_CWORD -eq 1 ]; then
-			conns="init"
-			COMPREPLY=( $(compgen -W "$conns" $cur) )
-		elif [ $COMP_CWORD -le 3 ]; then
-			_filedir -d
-		fi
-		return 0
-	fi
-
 	COMPREPLY=()
 	cur=${COMP_WORDS[COMP_CWORD]}
 
@@ -32,7 +22,7 @@ _xdebrepo()
 			return 0
 		fi
 		if [ "${COMP_WORDS[1]}" == "key" ]; then
-			conns="gen list"
+			conns="gen ls list"
 			COMPREPLY=( $(compgen -W "$conns" $cur) )
 			return 0
 		fi
@@ -44,12 +34,18 @@ _xdebrepo()
 		return 0
 	fi
 	if [ $COMP_CWORD -eq 3 ]; then
+		if [ "${COMP_WORDS[1]}" == "key" ]; then
+			if [ "${COMP_WORDS[2]}" != "list" ]; then
+				return 0
+			fi
+			conns=$(xdebrepo key ls)
+			return 0;
+		fi
 		if [ "${COMP_WORDS[1]}" == "repo" ]; then
 			if [ "${COMP_WORDS[2]}" == "create" ]; then
 				return 0
 			fi
-			source /etc/xdebrepo/xdebrepo.conf
-			conns=$(\find ${XDEBREPO_CONF_PATH} -name repo.conf -exec bash -c "realpath --relative-to=${XDEBREPO_CONF_PATH} {}|xargs dirname " \;)
+			conns=$(xdebrepo repo ls)
 			COMPREPLY=( $(compgen -W "$conns" $cur) )
 			return 0
 		fi
@@ -62,8 +58,9 @@ _xdebrepo()
 		if [ "${COMP_WORDS[2]}" != "list" ]; then
 			return 0
 		fi
-		source /etc/xdebrepo/xdebrepo.conf
-		conns=$(\cat ${XDEBREPO_PATH}/${COMP_WORDS[3]}/conf/distributions 2>/dev/null| awk '/Codename:/ {printf "%s\n", $2}')
+		conns=$(xdebrepo repo dists ${COMP_WORDS[3]})
+		# source ${XDEBREPO_CONF_DIR_BASE}/etc/xdebrepo/xdebrepo.conf
+		# conns=$(\cat ${XDEBREPO_PATH}/${COMP_WORDS[3]}/conf/distributions 2>/dev/null| awk '/Codename:/ {printf "%s\n", $2}')
 		COMPREPLY=( $(compgen -W "$conns" $cur) )
 		return 0
 	fi

@@ -18,6 +18,7 @@ xdebrepo_usage()
 	echo "	init <repo path> <conf path>"
 	echo ""
 	echo "	key gen <gpg dir> <owner name> <owner email>"
+	echo "	key ls"
 	echo "	key list <gpg dir>"
 	echo ""
 	echo "	repo create <repodir> <gpg dir> <key>"
@@ -108,12 +109,14 @@ EOF
 	chmod 0700 "${GPG_OUTPUT}"
 
 	# generate and password
-	PASS=$(apg -a 1 -m 24 -n 1 -d)
-	echo -n ${PASS} > "${GPG_FILENAME}.pass"
-	chmod 600 "${GPG_FILENAME}.pass"
+# 	PASS=$(apg -a 1 -m 24 -n 1 -d)
+# 	echo -n ${PASS} > "${GPG_FILENAME}.pass"
+# 	chmod 600 "${GPG_FILENAME}.pass"
+# 	GPG_PASS_OPT=--pinentry-mode loopback --passphrase-file \"${GPG_FILENAME}.pass\"
 
 	# generate gnupg key
 	gpg --batch  --gen-key << EOF
+%no-protection
 %echo Generating a master OpenPGP key
 Key-Type: RSA
 Key-Length: 4096
@@ -125,7 +128,7 @@ Name-Real: "${GPG_KEYNAME}"
 Name-Comment: ${GPG_KEYCOMMENT}
 Name-Email: ${OWNER_EMAIL}
 Expire-Date: 0
-Passphrase: ${PASS}
+# Passphrase: ${PASS}
 # Do a commit here, so that we can later print "done" :-)
 %commit
 %echo done
@@ -136,7 +139,9 @@ EOF
 	fi
 
 	# export public key
-	gpg -a --output "${GPG_FILENAME}.public" --export "${GPG_KEYNAME}"
+	gpg -a --output "${GPG_FILENAME}.public" \
+		--export-options export-backup \
+		--export "${GPG_KEYNAME}"
 	if [ $? -ne 0 ]; then
 		echo "ERROR: gpg export public key"
 		exit 1
@@ -144,8 +149,10 @@ EOF
 	chmod 0600 "${GPG_FILENAME}.public"
 
 	# export private key
-	gpg --batch --yes --pinentry-mode loopback --passphrase-file "${GPG_FILENAME}.pass" \
-		-a --output "${GPG_FILENAME}.private" --export-secret-keys "${GPG_KEYNAME}"
+	gpg --batch --yes ${GPG_PASS_OPT} \
+		-a --output "${GPG_FILENAME}.private" \
+		--export-options export-backup \
+		--export-secret-keys "${GPG_KEYNAME}"
 	if [ $? -ne 0 ]; then
 		echo "ERROR: gpg export secret key"
 		exit 1
@@ -158,8 +165,10 @@ EOF
 	chmod 0600 "${GPG_FILENAME}.private"
 
 	# export signing key
-	gpg --batch --yes --pinentry-mode loopback --passphrase-file "${GPG_FILENAME}.pass" \
-		-a --output "${GPG_FILENAME}.signing" --export-secret-subkeys "${GPG_KEYNAME}"
+	gpg --batch --yes ${GPG_PASS_OPT} \
+		-a --output "${GPG_FILENAME}.signing" \
+		--export-options export-backup \
+		--export-secret-subkeys "${GPG_KEYNAME}"
 	if [ $? -ne 0 ]; then
 		echo "ERROR: gpg export signing key"
 		exit 1
@@ -177,28 +186,36 @@ EOF
 	echo "sub_key=${sub_key}"
 	echo ""
 
+	echo "remove secret key"
+	gpg --batch --yes --delete-secret-keys "${main_fpr}!"
+
+# 	echo "remove password for private key"
+# 	gpg --batch --yes ${GPG_PASS_OPT} \
+# 		--edit-key ${main_fpr} passwd
+# 	echo "res $?"
+# 	echo "remove password for signing key"
+# 	gpg --batch --yes ${GPG_PASS_OPT} \
+# 		--edit-key ${sub_fpr} passwd
+# 	echo "res $?"
+
 	# import with:
-	# gpg --home .gnupg --batch --yes --pinentry-mode loopback \
-	#	--passphrase-file ${GPG_FILENAME}.pass \
-	#	--import ${GPG_FILENAME}.signing
-	#
-	# and remove passowrd
-
-	# or
-	# gpg --list-secret-keys
-	# gpg --edit-key 10E6133F
-	#	passwd
-
-	# or
-	# script -c "gpg --edit-key 88D034EEFA6A5A9C2331EC3F40ED52B62841FFD8" /dev/null
-
-	# gpg --delete-secret-key 10E6133F
+	# gpg --home .gnupg --import ${GPG_FILENAME}.signing
 
 	# gpg --keyserver keyserver.ubuntu.com --send-key 10E6133F
 
-
 	echo "Key output dir: '${GPG_OUTPUT}'"
 	ls -laF "${GPG_OUTPUT}"
+}
+
+xdebrepo_key_ls()
+{
+# 	<repodir>
+# 	echo "${FUNCNAME[0]}($#): '$1' '$2' '$3' '$4' '$5' '$6' '$7' '$8' '$9'"
+	xdebrepo_conf_load
+
+	REPO_CONF_PATH="$(realpath "${XDEBREPO_CONF_PATH}")"
+	find ${REPO_CONF_PATH} -name '.gnupg' -print0 | \
+		xargs -0 -I{} dirname "{}" -z|xargs -0 -I{} basename "{}"
 }
 
 xdebrepo_key_list()
@@ -510,6 +527,21 @@ xdebrepo_repo_pubkey()
 
 	# export public key
 	gpg --homedir=${REPO_GNUPGHOME} -a --export "${REPO_SEC_KEY}"
+}
+
+xdebrepo_repo_dists()
+{
+# 	<repodir>
+# 	echo "${FUNCNAME[0]}($#): '$1' '$2' '$3' '$4' '$5' '$6' '$7' '$8' '$9'"
+	if [ $# -ne 1 ]; then
+		xdebrepo_usage
+	fi
+	xdebrepo_conf_load
+	REPO_CONF_PATH="$(realpath "${XDEBREPO_CONF_PATH}/${1}")"
+	REPO_CONF_FILE="${REPO_CONF_PATH}/${REPO_CONF_FILE}"
+	xdebrepo_repo_conf_load "$REPO_CONF_FILE"
+
+	cat ${XDEBREPO_PATH}/${COMP_WORDS[3]}/conf/distributions 2>/dev/null| awk '/Codename:/ {printf "%s\n", $2}'
 }
 
 xdebrepo_repo()
