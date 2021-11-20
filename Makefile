@@ -2,11 +2,11 @@ PROJECT = xdebrepo
 
 GIT_LAST_TAG := $(shell git describe --tags --abbrev=0 2>/dev/null)
 
-ifdef GIT_LAST_TAG
-PROJECT_BASE_VERSION = $(GIT_LAST_TAG)
-else
+# ifdef GIT_LAST_TAG
+# PROJECT_BASE_VERSION = $(GIT_LAST_TAG)
+# else
 PROJECT_BASE_VERSION = 0.0
-endif
+# endif
 
 DEBNAME = $(PROJECT)
 ARCH = all
