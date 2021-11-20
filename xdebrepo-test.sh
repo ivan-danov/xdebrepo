@@ -1,8 +1,12 @@
 #!/bin/bash
 
-export XDEBREPO_CONF_DIR_BASE=./testrepo
+export SCRIPT_PATH=$(realpath $(dirname $0))
+export XDEBREPO_CONF_DIR_BASE=${SCRIPT_PATH}/testrepo
 
-rm -rf ${XDEBREPO_CONF_DIR_BASE}
+if [ -d ${XDEBREPO_CONF_DIR_BASE} ]; then
+	echo "ERROR: directory ${XDEBREPO_CONF_DIR_BASE} already exists"
+	exit 1
+fi
 
 ./xdebrepo init ${XDEBREPO_CONF_DIR_BASE}/repo ${XDEBREPO_CONF_DIR_BASE}/etc/xdebrepo/
 
