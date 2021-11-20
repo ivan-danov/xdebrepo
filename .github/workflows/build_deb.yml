@@ -7,6 +7,7 @@ on:
 
 jobs:
   release:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -40,6 +41,7 @@ jobs:
         path: info
 
   build:
+    name: Build Release
     needs: [release]
     runs-on: ubuntu-latest
 
@@ -53,6 +55,11 @@ jobs:
       run: |
         tag=$(make info)
         echo "::set-output name=tag::$tag"
+    - name: Get deb name
+      id: debname
+      run: |
+        debname=$(make debname)
+        echo "::set-output name=debname::$debname"
 
     - uses: actions/download-artifact@v1
       with:
@@ -84,8 +91,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.upload_info.outputs.upload_url }}
-        asset_path: xdebrepo_${{ steps.create_tag.outputs.tag }}_all.deb
-        asset_name: xdebrepo_${{ steps.create_tag.outputs.tag }}_all.deb
+        asset_path: ${{ steps.debname.outputs.debname }}
+        asset_name: ${{ steps.debname.outputs.debname }}
         asset_content_type: application/vnd.debian.binary-package
 
   metadata:
