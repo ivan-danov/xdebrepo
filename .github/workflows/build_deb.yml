@@ -29,23 +29,18 @@ jobs:
         draft: true
         prerelease: false
 
-    - uses: actions/upload-release-asset@v1.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create artifact files
+      run: |
+        mkdir info
+        echo "${{ steps.create_release.outputs.id }}" > info/release_id
+        echo "${{ steps.create_release.outputs.upload_url }}" > info/upload_url
+    - uses: actions/upload-artifact@v1
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./xdebrepo_*_all.deb
-        asset_name: xdebrepo_*_all.deb
-        asset_content_type: application/vnd.debian.binary-package
-
-    - uses: eregon/publish-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        release_id: ${{ steps.create_release.outputs.id }}
-
+        name: info
+        path: info
 
   build:
+    needs: [release]
     runs-on: ubuntu-latest
 
     steps:
@@ -53,7 +48,19 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Install jq tool
+    - name: Create tag
+      id: create_tag
+      run: |
+        tag=$(make info)
+        echo "::set-output name=tag::$tag"
+
+    - name: Set upload_url
+      id: upload_info
+      run: |
+        upload_url=$(cat info/upload_url)
+        echo "::set-output name=upload_url::$upload_url"
+
+    - name: Install extra packages
       run: |
         sudo apt-get update
         sudo apt-get install git git2cl lintian
@@ -68,8 +75,36 @@ jobs:
       run: ls -R xdebrepo_*_all.deb
       working-directory: .
 
-    - name: Save artifacts
-      uses: actions/upload-artifact@v2
+    - name: Upload
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: xdebrepo
-        path: xdebrepo_*_all.deb
+        upload_url: ${{ steps.upload_info.outputs.upload_url }}
+        asset_path: xdebrepo_${{ steps.create_tag.outputs.tag }}_all.deb
+        asset_name: xdebrepo_${{ steps.create_tag.outputs.tag }}_all.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+  metadata:
+    name: Publish Release
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v1
+      with:
+        name: info
+    - name: Set publish_info
+      id: publish_info
+      run: |
+        release_id=$(cat info/release_id)
+        echo "::set-output name=release_id::$release_id"
+    - uses: eregon/publish-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_id: ${{ steps.publish_info.outputs.release_id }}
+    - uses: eregon/keep-last-n-releases@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        n: 3
