@@ -9,7 +9,7 @@ _xdebrepo()
 	cur=${COMP_WORDS[COMP_CWORD]}
 
 	if [ $COMP_CWORD -eq 1 ]; then
-		conns="init key repo"
+		conns="init key repo ssh"
 		COMPREPLY=( $(compgen -W "$conns" $cur) )
 		return 0
 	fi

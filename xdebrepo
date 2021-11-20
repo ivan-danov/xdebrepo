@@ -512,11 +512,11 @@ xdebrepo_repo_aptconf()
 	xdebrepo_repo_conf_load "$REPO_CONF_FILE"
 
 	REPO_ARCH=$(cat "${REPO_PATH}/conf/distributions"|awk '/Architectures/ {printf "%s,", $2}')
-	REPO_COMP=$(cat "${REPO_PATH}/conf/distributions"|awk '/Components/ {printf "%s ", $2}')
+	REPO_COMP=$(cat "${REPO_PATH}/conf/distributions"|awk '/Components/ {printf "%s,", $2}')
 
 	for DIST_NAME in $(ls "${REPO_PATH}/dists"); do
-		echo "deb [ arch=${REPO_ARCH%,} ] ssh://${REPO_SRV_NAME}/${REPO_PATH} ${DIST_NAME} ${REPO_COMP}"
-# 		echo "deb [ arch=${REPO_ARCH%,} ] \"http://${REPO_SRV_NAME}/${REPO_WEB_DIR}\" ${DIST_NAME} ${REPO_COMP}"
+		echo "deb [ arch=${REPO_ARCH%,} ] ssh://${REPO_SRV_NAME}/${REPO_PATH} ${DIST_NAME} ${REPO_COMP%,}"
+# 		echo "deb [ arch=${REPO_ARCH%,} ] \"http://${REPO_SRV_NAME}/${REPO_WEB_DIR}\" ${DIST_NAME} ${REPO_COMP%,}"
 	done
 }
 
@@ -548,7 +548,7 @@ xdebrepo_repo_dists()
 	REPO_CONF_FILE="${REPO_CONF_PATH}/${REPO_CONF_FILE}"
 	xdebrepo_repo_conf_load "$REPO_CONF_FILE"
 
-	cat ${XDEBREPO_PATH}/${COMP_WORDS[3]}/conf/distributions 2>/dev/null| awk '/Codename:/ {printf "%s\n", $2}'
+	cat ${REPO_PATH}/conf/distributions 2>/dev/null| awk '/Codename:/ {printf "%s\n", $2}'
 }
 
 xdebrepo_repo()
