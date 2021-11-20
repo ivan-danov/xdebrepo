@@ -73,7 +73,7 @@ info:
 	${Q}echo "   DEB Package name: $(FINAL_DEBNAME)"
 
 version:
-	${Q}echo "$(PROJECT_VERSION)"
+	@echo "$(PROJECT_VERSION)"
 
 
 ifndef DEBDIR
