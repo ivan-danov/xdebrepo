@@ -623,7 +623,7 @@ xdebrepo_ssh_add_apt_key()
 
 	if [ ! -d ${HOME}/.ssh ]; then
 		mkdir -pv ${HOME}/.ssh
-		chmod 0700 -pv ${HOME}/.ssh
+		chmod 0700 ${HOME}/.ssh
 	fi
 
 	echo -n "command=\"${SCRIPT_PATH}/xdebrepo ssh apt_restrict ${1}\"," >> ${HOME}/.ssh/authorized_keys
