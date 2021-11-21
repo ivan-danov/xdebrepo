@@ -595,7 +595,8 @@ xdebrepo_ssh_add_publish_key()
 	echo -n "no-X11-forwarding " >> ${HOME}/.ssh/authorized_keys
 	cat ${2} >> ${HOME}/.ssh/authorized_keys
 
-	mkdir -pv ${HOME}/tmp/${1}
+	mkdir -pv ${XDEBREPO_PATH}/tmp/${1}
+	chmod 0775 ${XDEBREPO_PATH}/tmp/${1}
 	exit 0
 }
 
@@ -655,9 +656,10 @@ xdebrepo_ssh_publish_restrict()
 		exit 1
 	fi
 
+	xdebrepo_conf_load
 # 	echo "$SSH_ORIGINAL_COMMAND" >> /tmp/xdebrepo_publish_restrict.log
 
-	if [[ "$SSH_ORIGINAL_COMMAND" =~ ^scp[[:space:]]-t[[:space:]]${HOME}/tmp/${1}.? ]]; then
+	if [[ "$SSH_ORIGINAL_COMMAND" =~ ^scp[[:space:]]-t[[:space:]]${XDEBREPO_PATH}/tmp/${1}.? ]]; then
 		$SSH_ORIGINAL_COMMAND
 	elif [[ "$SSH_ORIGINAL_COMMAND" =~ ^${HOME}/xdebrepo-publish[[:space:]]${1}[[:space:]].?  ]]; then
 		${SSH_ORIGINAL_COMMAND};
