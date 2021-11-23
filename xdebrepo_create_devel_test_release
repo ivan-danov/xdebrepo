@@ -332,7 +332,7 @@ XDEBREPO_REPO: ${REPO_OWNER}-devel
 XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel
 $(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel)
 XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-devel
-XDEBREPO_PUBLISH_SCRIPT: ${REPO_PUBLISH_USER}/xdebrepo_publish ${REPO_OWNER}-devel
+XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish ${REPO_OWNER}-devel
 XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
 $(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
 
@@ -344,7 +344,7 @@ XDEBREPO_REPO: ${REPO_OWNER}-test
 XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test
 $(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test)
 XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-test
-XDEBREPO_PUBLISH_SCRIPT: ${REPO_PUBLISH_USER}/xdebrepo_publish ${REPO_OWNER}-test
+XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish ${REPO_OWNER}-test
 XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
 $(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
 
@@ -356,7 +356,7 @@ XDEBREPO_REPO: ${REPO_OWNER}-release
 XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release
 $(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release)
 XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-release
-XDEBREPO_PUBLISH_SCRIPT: ${REPO_PUBLISH_USER}/xdebrepo_publish ${REPO_OWNER}-release
+XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish ${REPO_OWNER}-release
 XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
 $(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
 
@@ -392,7 +392,7 @@ echo "Publish deb package: '\\\${DEB_FILE}'"
 #  1. copy file
 scp -P \\\${XDEBREPO_PORT} -i \\\${SSH_DIR}/private.key \\\${DEB_FILE} \\
 	\\\${XDEBREPO_USER}@\\\${XDEBREPO_HOST}:\\\${DEBREPO_PUBLISH_PATH}
-if [ $? -ne 0 ]; then
+if [ \\\$? -ne 0 ]; then
 	echo "Publish deb package: '\\\${DEB_FILE}' scp FAIL"
 	exit 1
 fi
@@ -402,7 +402,7 @@ ssh -p \\\${XDEBREPO_PORT} -i \\\${SSH_DIR}/private.key \\
 	\\\${XDEBREPO_USER}@$\\\{XDEBREPO_HOST} \\
 	\\\${XDEBREPO_PUBLISH_SCRIPT}/ \\\${XDEBREPO_REPO} \\
 	\\\${DEB_FILE_DISTRO} \\\$(basename \\\${DEB_FILE})
-if [ $? -ne 0 ]; then
+if [ \\\$? -ne 0 ]; then
 	echo "Publish deb package: '\\\${DEB_FILE}' ssh FAIL"
 	res=1
 	break
@@ -450,7 +450,7 @@ xdebrepo ssh add_apt_key ${REPO_OWNER}-\\\${REPO_LEVEL} \\\\
 # ON CLIENT
 
 Create your own config file /etc/apt/apt.conf.d/30-ssh-transport and paste the following:
-``Dir::Bin::Methods::rsh "rsh";
+Dir::Bin::Methods::rsh "rsh";
 Dir::Bin::Methods::ssh "ssh";
 
 export CLIENT_NAME=client_name
