@@ -89,6 +89,13 @@ define deb_begin
 	$(Q)mkdir -p $(DEBDIR)/DEBIAN
 
 	$(Q)cp copyright $(DEBDIR)/usr/share/doc/$(DEBNAME)/copyright
+
+	$(Q)mkdir -p $(DEBDIR)/usr/share/$(DEBNAME)
+	$(Q)cp xdebrepo_publish $(DEBDIR)/usr/share/doc/$(DEBNAME)/
+	$(Q)cp xdebrepo_create_devel_test_release $(DEBDIR)/usr/share/doc/$(DEBNAME)/
+	$(Q)chmod 0755 $(DEBDIR)/usr/share/doc/$(DEBNAME)/xdebrepo_publish
+	$(Q)chmod 0755 $(DEBDIR)/usr/share/doc/$(DEBNAME)/xdebrepo_create_devel_test_release
+
 endef # deb_begin
 
 ifneq ($(GIT2CL),)
