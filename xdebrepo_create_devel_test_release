@@ -432,7 +432,7 @@ ssh -p ${REPO_SERVER_SSH_PORT} -i ${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel \\\
 
 # ----- Use repository -----
 
-# ON SERVER
+# ON SERVER (as ${REPO_PUBLISH_USER} user)
 
 # generate clients ssh keys (or on client and copy public key to server)
 export CLIENT_NAME=client_name
@@ -447,6 +447,10 @@ xdebrepo ssh add_apt_key ${REPO_OWNER}-\\\${REPO_LEVEL} \\\\
 
 # copy "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" to client /root/.ssh/
 
+# generate apt sources.list row
+xdebrepo repo aptconf ${REPO_OWNER}-\\\${REPO_LEVEL}
+
+
 # ON CLIENT
 
 Create your own config file /etc/apt/apt.conf.d/30-ssh-transport and paste the following:
@@ -458,10 +462,10 @@ export REPO_LEVEL=devel # test, release
 sudo cp "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" /root/.ssh/
 
 # Add to /root/.ssh/config
-host ${REPO_OWNER}-\\\${REPO_LEVEL}.${REPO_OWNER}
+host ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo
 	hostname ${REPO_SERVER_ADDRESS}
-	user ${REPO_PUBLISH_USER}
-	port ${REPO_SERVER_ADDRESS}
+	user ${REPO_APT_USER}
+	port ${REPO_SERVER_SSH_PORT}
 	IdentityFile ~/.ssh/\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}
 	ForwardAgent no
 	ForwardX11 no
@@ -469,10 +473,10 @@ host ${REPO_OWNER}-\\\${REPO_LEVEL}.${REPO_OWNER}
 # Add repository public key to apt
 
 # one line
-sudo ssh ${REPO_OWNER}-devel.${REPO_OWNER} "cat /repo/${REPO_OWNER}-devel/${REPO_OWNER}-devel.key" | sudo apt-key add ${REPO_OWNER}-\\\${REPO_LEVEL}.key
+sudo ssh ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo "cat /repo/${REPO_OWNER}-\\\${REPO_LEVEL}/${REPO_OWNER}-\\\${REPO_LEVEL}.key" | sudo apt-key add
 
 # two lines version
-sudo scp ${REPO_OWNER}-\\\${REPO_LEVEL}.${REPO_OWNER}:${REPO_DIR}/${REPO_OWNER}-\\\${REPO_LEVEL}/${REPO_OWNER}-\\\${REPO_LEVEL}.key .
+sudo scp ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo:${REPO_DIR}/${REPO_OWNER}-\\\${REPO_LEVEL}/${REPO_OWNER}-\\\${REPO_LEVEL}.key .
 sudo apt-key add ${REPO_OWNER}-\\\${REPO_LEVEL}.key
 
 sudo apt update
