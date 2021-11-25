@@ -502,7 +502,7 @@ echo "Publish deb package: '\\\${DEB_FILE}'"
 # push on \\\${XDEBREPO_REPO}
 #  step 1. copy file
 scp -P \\\${XDEBREPO_PORT} -i \\\${SSH_DIR}/private.key \\\${DEB_FILE} \\
-	\\\${XDEBREPO_USER}@\\\${XDEBREPO_HOST}:\\\${DEBREPO_PUBLISH_PATH}
+	\\\${XDEBREPO_USER}@\\\${XDEBREPO_HOST}:\\\${XDEBREPO_PUBLISH_PATH}
 if [ \\\$? -ne 0 ]; then
 	echo "Publish deb package: '\\\${DEB_FILE}' scp FAIL"
 	exit 1
