@@ -32,310 +32,317 @@ export SCRIPT_PATH=$(realpath $(dirname $0))
 export REPO_CONF_DIR=/${REPO_PUBLISH_USER}
 export XDEBREPO_CONF_DIR_BASE=/${REPO_PUBLISH_USER}
 
+
+
+
 xdebrepo_create_users_groups_dirs()
 {
-	echo "------ Create group ${REPO_GROUP}"
-	sudo groupadd -r ${REPO_GROUP}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Create group ${REPO_GROUP}"
+sudo groupadd -r ${REPO_GROUP}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Add user ${REPO_PUBLISH_USER}"
-	sudo useradd -r -c "${REPO_OWNER} debian repository publisher" \
-		-d /${REPO_PUBLISH_USER} -M -N -g ${REPO_GROUP} \
-		-s /bin/bash ${REPO_PUBLISH_USER}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Create dir /${REPO_PUBLISH_USER}"
-	sudo mkdir /${REPO_PUBLISH_USER}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set owner of dir /${REPO_PUBLISH_USER}"
-	sudo chown ${REPO_PUBLISH_USER}.${REPO_GROUP} /${REPO_PUBLISH_USER}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of dir /${REPO_PUBLISH_USER}"
-	sudo chmod 0750 /${REPO_PUBLISH_USER}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Add user ${REPO_PUBLISH_USER}"
+sudo useradd -r -c "${REPO_OWNER} debian repository publisher" \
+	-d /${REPO_PUBLISH_USER} -M -N -g ${REPO_GROUP} \
+	-s /bin/bash ${REPO_PUBLISH_USER}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Create dir /${REPO_PUBLISH_USER}"
+sudo mkdir /${REPO_PUBLISH_USER}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set owner of dir /${REPO_PUBLISH_USER}"
+sudo chown ${REPO_PUBLISH_USER}.${REPO_GROUP} /${REPO_PUBLISH_USER}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of dir /${REPO_PUBLISH_USER}"
+sudo chmod 0750 /${REPO_PUBLISH_USER}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Add user ${REPO_APT_USER}"
-	sudo useradd -r -c "${REPO_OWNER} debian repository apt reader" \
-		-d /${REPO_APT_USER} -M -N -g ${REPO_GROUP} \
-		-s /bin/bash ${REPO_APT_USER}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Create dir /${REPO_APT_USER}"
-	sudo mkdir /${REPO_APT_USER}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set owner of dir /${REPO_APT_USER}"
-	sudo chown ${REPO_APT_USER}.${REPO_GROUP} /${REPO_APT_USER}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of dir /${REPO_APT_USER}"
-	sudo chmod 0750 /${REPO_APT_USER}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Add user ${REPO_APT_USER}"
+sudo useradd -r -c "${REPO_OWNER} debian repository apt reader" \
+	-d /${REPO_APT_USER} -M -N -g ${REPO_GROUP} \
+	-s /bin/bash ${REPO_APT_USER}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Create dir /${REPO_APT_USER}"
+sudo mkdir /${REPO_APT_USER}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set owner of dir /${REPO_APT_USER}"
+sudo chown ${REPO_APT_USER}.${REPO_GROUP} /${REPO_APT_USER}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of dir /${REPO_APT_USER}"
+sudo chmod 0750 /${REPO_APT_USER}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Create directory for repository ${REPO_DIR}"
-	sudo mkdir ${REPO_DIR}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set owner of repository ${REPO_DIR}"
-	sudo chown ${REPO_PUBLISH_USER}.${REPO_GROUP} ${REPO_DIR}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of repository ${REPO_DIR}"
-	sudo chmod 0775 ${REPO_DIR}
-	if [ $? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Create directory for repository ${REPO_DIR}"
+sudo mkdir ${REPO_DIR}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set owner of repository ${REPO_DIR}"
+sudo chown ${REPO_PUBLISH_USER}.${REPO_GROUP} ${REPO_DIR}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of repository ${REPO_DIR}"
+sudo chmod 0775 ${REPO_DIR}
+if [ $? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	# generate .bashrc for users
+# generate .bashrc for users
 
-	# exec as user ${REPO_APT_USER}
-	sudo su ${REPO_APT_USER} << EOF
+# exec as user ${REPO_APT_USER}
+sudo su ${REPO_APT_USER} << EOF
 
-	export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
-	export REPO_APT_USER=${REPO_APT_USER}
+export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
+export REPO_APT_USER=${REPO_APT_USER}
 
-	echo "------ Add XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE} to /${REPO_APT_USER}/.bashrc"
-	echo "export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}" > /${REPO_APT_USER}/.bashrc
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Add XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE} to /${REPO_APT_USER}/.bashrc"
+echo "export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}" > /${REPO_APT_USER}/.bashrc
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
 EOF
 
-	# exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
-	sudo su ${REPO_PUBLISH_USER} << EOF
+# exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
+sudo su ${REPO_PUBLISH_USER} << EOF
 
-	export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
-	export REPO_DIR=${REPO_DIR}
-	export REPO_CONF_DIR=${REPO_CONF_DIR}
-	export REPO_APT_USER=${REPO_APT_USER}
+export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
+export REPO_DIR=${REPO_DIR}
+export REPO_CONF_DIR=${REPO_CONF_DIR}
+export REPO_APT_USER=${REPO_APT_USER}
 
-	echo "export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}" > ${REPO_DIR}/.bashrc
-	echo "export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}" > ${REPO_CONF_DIR}/.bashrc
+echo "export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}" > ${REPO_DIR}/.bashrc
+echo "export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}" > ${REPO_CONF_DIR}/.bashrc
 
 EOF
 }
+
+
+
 
 xdebrepo_create_repos()
 {
-	# exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
-	sudo su ${REPO_PUBLISH_USER} << EOF
+# exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
+sudo su ${REPO_PUBLISH_USER} << EOF
 
-	export REPO_CONF_DIR=${REPO_CONF_DIR}
-	export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
-	export REPO_GROUP=${REPO_GROUP}
-	export REPO_PUBLISH_USER=${REPO_PUBLISH_USER}
-	export REPO_APT_USER=${REPO_APT_USER}
-	export REPO_DIR=${REPO_DIR}
-	export SCRIPT_PATH=${SCRIPT_PATH}
-	export INFO_FILE=${INFO_FILE}
+export REPO_CONF_DIR=${REPO_CONF_DIR}
+export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
+export REPO_GROUP=${REPO_GROUP}
+export REPO_PUBLISH_USER=${REPO_PUBLISH_USER}
+export REPO_APT_USER=${REPO_APT_USER}
+export REPO_DIR=${REPO_DIR}
+export SCRIPT_PATH=${SCRIPT_PATH}
+export INFO_FILE=${INFO_FILE}
 
-	echo "------ Copy xdebrepo_publish"
-	echo "------ cp -v ${SCRIPT_PATH}/xdebrepo_publish ${REPO_CONF_DIR}"
-	cp -v ${SCRIPT_PATH}/xdebrepo_publish ${REPO_CONF_DIR}
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Copy xdebrepo_publish"
+echo "------ cp -v ${SCRIPT_PATH}/xdebrepo_publish ${REPO_CONF_DIR}"
+cp -v ${SCRIPT_PATH}/xdebrepo_publish ${REPO_CONF_DIR}
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ xdebrepo init ${REPO_DIR} ${XDEBREPO_CONF_DIR_BASE}"
-	xdebrepo init ${REPO_DIR} ${XDEBREPO_CONF_DIR_BASE}
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ xdebrepo init ${REPO_DIR} ${XDEBREPO_CONF_DIR_BASE}"
+xdebrepo init ${REPO_DIR} ${XDEBREPO_CONF_DIR_BASE}
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ chmod 0750 ${REPO_CONF_DIR}/etc"
-	chmod 0750 ${REPO_CONF_DIR}/etc
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ chmod 0750 ${REPO_CONF_DIR}/etc/xdebrepo"
-	chmod 0750 ${REPO_CONF_DIR}/etc/xdebrepo
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ chmod 0750 ${REPO_CONF_DIR}/etc"
+chmod 0750 ${REPO_CONF_DIR}/etc
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ chmod 0750 ${REPO_CONF_DIR}/etc/xdebrepo"
+chmod 0750 ${REPO_CONF_DIR}/etc/xdebrepo
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Generate devel key"
-	xdebrepo key gen ${REPO_OWNER}-devel "${REPO_OWNER} Devel Debian Repository" "${REPO_OWNER_EMAIL}"
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	export REPO_SRV_NAME="${REPO_OWNER}-devel.xdebrepo"
-	export REPO_WEB_DIR="${REPO_DIR}/${REPO_OWNER}-devel"
-	export REPO_ORIGIN="${REPO_OWNER} Devel deb repository"
-	export REPO_DESCRIPTION="${REPO_OWNER} Devel deb repository"
-	echo "------ Create devel repo"
-	xdebrepo repo create ${REPO_OWNER}-devel ${REPO_OWNER}-devel "${REPO_OWNER} Devel Debian Repository"
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of devel repo"
-	chmod 0755 ${REPO_DIR}/${REPO_OWNER}-devel
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of devel repo conf"
-	chmod 0750 ${REPO_CONF_DIR}/${REPO_OWNER}-devel
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Generate devel key"
+xdebrepo key gen ${REPO_OWNER}-devel "${REPO_OWNER} Devel Debian Repository" "${REPO_OWNER_EMAIL}"
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+export REPO_SRV_NAME="${REPO_OWNER}-devel.xdebrepo"
+export REPO_WEB_DIR="${REPO_DIR}/${REPO_OWNER}-devel"
+export REPO_ORIGIN="${REPO_OWNER} Devel deb repository"
+export REPO_DESCRIPTION="${REPO_OWNER} Devel deb repository"
+echo "------ Create devel repo"
+xdebrepo repo create ${REPO_OWNER}-devel ${REPO_OWNER}-devel "${REPO_OWNER} Devel Debian Repository"
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of devel repo"
+chmod 0755 ${REPO_DIR}/${REPO_OWNER}-devel
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of devel repo conf"
+chmod 0750 ${REPO_CONF_DIR}/${REPO_OWNER}-devel
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Generate test key"
-	xdebrepo key gen ${REPO_OWNER}-test "${REPO_OWNER} Test Debian Repository" "${REPO_OWNER_EMAIL}"
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	export REPO_SRV_NAME="${REPO_OWNER}-test.xdebrepo"
-	export REPO_WEB_DIR="${REPO_DIR}/${REPO_OWNER}-test"
-	export REPO_ORIGIN="${REPO_OWNER} Test deb repository"
-	export REPO_DESCRIPTION="${REPO_OWNER} Test deb repository"
-	echo "------ Create test repo"
-	xdebrepo repo create ${REPO_OWNER}-test ${REPO_OWNER}-test "${REPO_OWNER} Test Debian Repository"
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of test repo"
-	chmod 0755 ${REPO_DIR}/${REPO_OWNER}-test
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of test repo conf"
-	chmod 0750 ${REPO_CONF_DIR}/${REPO_OWNER}-test
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Generate test key"
+xdebrepo key gen ${REPO_OWNER}-test "${REPO_OWNER} Test Debian Repository" "${REPO_OWNER_EMAIL}"
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+export REPO_SRV_NAME="${REPO_OWNER}-test.xdebrepo"
+export REPO_WEB_DIR="${REPO_DIR}/${REPO_OWNER}-test"
+export REPO_ORIGIN="${REPO_OWNER} Test deb repository"
+export REPO_DESCRIPTION="${REPO_OWNER} Test deb repository"
+echo "------ Create test repo"
+xdebrepo repo create ${REPO_OWNER}-test ${REPO_OWNER}-test "${REPO_OWNER} Test Debian Repository"
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of test repo"
+chmod 0755 ${REPO_DIR}/${REPO_OWNER}-test
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of test repo conf"
+chmod 0750 ${REPO_CONF_DIR}/${REPO_OWNER}-test
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Generate release key"
-	xdebrepo key gen ${REPO_OWNER}-release "${REPO_OWNER} Release Debian Repository" "${REPO_OWNER_EMAIL}"
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	export REPO_SRV_NAME="${REPO_OWNER}-release.xdebrepo"
-	export REPO_WEB_DIR="${REPO_DIR}/${REPO_OWNER}-release"
-	export REPO_ORIGIN="${REPO_OWNER} Release deb repository"
-	export REPO_DESCRIPTION="${REPO_OWNER} Release deb repository"
-	echo "------ Create release repo"
-	xdebrepo repo create ${REPO_OWNER}-release ${REPO_OWNER}-release "${REPO_OWNER} Release Debian Repository"
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of release repo"
-	chmod 0755 ${REPO_DIR}/${REPO_OWNER}-release
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Set mode of release repo conf"
-	chmod 0750 ${REPO_CONF_DIR}/${REPO_OWNER}-release
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Generate release key"
+xdebrepo key gen ${REPO_OWNER}-release "${REPO_OWNER} Release Debian Repository" "${REPO_OWNER_EMAIL}"
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+export REPO_SRV_NAME="${REPO_OWNER}-release.xdebrepo"
+export REPO_WEB_DIR="${REPO_DIR}/${REPO_OWNER}-release"
+export REPO_ORIGIN="${REPO_OWNER} Release deb repository"
+export REPO_DESCRIPTION="${REPO_OWNER} Release deb repository"
+echo "------ Create release repo"
+xdebrepo repo create ${REPO_OWNER}-release ${REPO_OWNER}-release "${REPO_OWNER} Release Debian Repository"
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of release repo"
+chmod 0755 ${REPO_DIR}/${REPO_OWNER}-release
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Set mode of release repo conf"
+chmod 0750 ${REPO_CONF_DIR}/${REPO_OWNER}-release
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Generate ${REPO_PUBLISHER_NAME} devel key"
-	ssh-keygen ${SSH_KEYGEN_OPTS} -C ${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel -f "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel" -N ""
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Generate ${REPO_PUBLISHER_NAME} test key"
-	ssh-keygen ${SSH_KEYGEN_OPTS} -C "${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test" -f "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test" -N ""
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Generate ${REPO_PUBLISHER_NAME} release key"
-	ssh-keygen ${SSH_KEYGEN_OPTS} -C "${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release" -f "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release" -N ""
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Generate ${REPO_PUBLISHER_NAME} devel key"
+ssh-keygen ${SSH_KEYGEN_OPTS} -C ${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel -f "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel" -N ""
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Generate ${REPO_PUBLISHER_NAME} test key"
+ssh-keygen ${SSH_KEYGEN_OPTS} -C "${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test" -f "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test" -N ""
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Generate ${REPO_PUBLISHER_NAME} release key"
+ssh-keygen ${SSH_KEYGEN_OPTS} -C "${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release" -f "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release" -N ""
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Add devel public keys to ${REPO_CONF_DIR}/.ssh/authorized_keys"
-	xdebrepo ssh add_publish_key ${REPO_OWNER}-devel ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel.pub
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Add test public keys to ${REPO_CONF_DIR}/.ssh/authorized_keys"
-	xdebrepo ssh add_publish_key ${REPO_OWNER}-test ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test.pub
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Add release public keys to ${REPO_CONF_DIR}/.ssh/authorized_keys"
-	xdebrepo ssh add_publish_key ${REPO_OWNER}-release ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release.pub
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Add devel public keys to ${REPO_CONF_DIR}/.ssh/authorized_keys"
+xdebrepo ssh add_publish_key ${REPO_OWNER}-devel ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel.pub
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Add test public keys to ${REPO_CONF_DIR}/.ssh/authorized_keys"
+xdebrepo ssh add_publish_key ${REPO_OWNER}-test ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test.pub
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Add release public keys to ${REPO_CONF_DIR}/.ssh/authorized_keys"
+xdebrepo ssh add_publish_key ${REPO_OWNER}-release ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release.pub
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 
-	echo "------ Export devel debian repository public key"
-	xdebrepo repo pubkey ${REPO_OWNER}-devel > ${REPO_DIR}/${REPO_OWNER}-devel/${REPO_OWNER}-devel.key
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Export test debian repository public key"
-	xdebrepo repo pubkey ${REPO_OWNER}-test > ${REPO_DIR}/${REPO_OWNER}-test/${REPO_OWNER}-test.key
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
-	echo "------ Export release debian repository public key"
-	xdebrepo repo pubkey ${REPO_OWNER}-release > ${REPO_DIR}/${REPO_OWNER}-release/${REPO_OWNER}-release.key
-	if [ \$? -ne 0 ]; then
-		echo "------ ERROR"
-		exit 1
-	fi
+echo "------ Export devel debian repository public key"
+xdebrepo repo pubkey ${REPO_OWNER}-devel > ${REPO_DIR}/${REPO_OWNER}-devel/${REPO_OWNER}-devel.key
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Export test debian repository public key"
+xdebrepo repo pubkey ${REPO_OWNER}-test > ${REPO_DIR}/${REPO_OWNER}-test/${REPO_OWNER}-test.key
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
+echo "------ Export release debian repository public key"
+xdebrepo repo pubkey ${REPO_OWNER}-release > ${REPO_DIR}/${REPO_OWNER}-release/${REPO_OWNER}-release.key
+if [ \$? -ne 0 ]; then
+	echo "------ ERROR"
+	exit 1
+fi
 EOF
 }
 
 
 
-# output file name, repo type
+
+# args: output file name, repo type
 xdebrepo_create_publish_script()
 {
 
@@ -409,188 +416,189 @@ chmod 0700 ${1}
 EOF
 }
 
+
+
+
 xdebrepo_create_help_files()
 {
 
-	xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_DEVEL} devel
-	xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_TEST} test
-	xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_RELEASE} release
+xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_DEVEL} devel
+xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_TEST} test
+xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_RELEASE} release
 
-	# exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
-	sudo su ${REPO_PUBLISH_USER} << EOF
+# exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
+sudo su ${REPO_PUBLISH_USER} << EOF
 
-	cat >> ${INFO_FILE} << IEOF
+cat >> ${INFO_FILE} << IEOF
 
-	# ----- GITHUB actions example -----
+# ----- GITHUB actions example -----
 
-	# 1. Repository secrets
+# 1. Repository secrets
 
-	# Create git repository secrets for ${REPO_OWNER}-devel debian repository
-	XDEBREPO_HOST: ${REPO_SERVER_ADDRESS}
-	XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
-	XDEBREPO_USER: ${REPO_PUBLISH_USER}
-	XDEBREPO_REPO: ${REPO_OWNER}-devel
-	XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel
-	$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel)
-	XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-devel
-	XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
-	XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
-	$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
+# Create git repository secrets for ${REPO_OWNER}-devel debian repository
+XDEBREPO_HOST: ${REPO_SERVER_ADDRESS}
+XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
+XDEBREPO_USER: ${REPO_PUBLISH_USER}
+XDEBREPO_REPO: ${REPO_OWNER}-devel
+XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel
+$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel)
+XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-devel
+XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
+XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
+$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
 
-	# Create git repository secrets for ${REPO_OWNER}-test debian repository
-	XDEBREPO_HOST: ${REPO_SERVER_ADDRESS}
-	XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
-	XDEBREPO_USER: ${REPO_PUBLISH_USER}
-	XDEBREPO_REPO: ${REPO_OWNER}-test
-	XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test
-	$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test)
-	XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-test
-	XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
-	XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
-	$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
+# Create git repository secrets for ${REPO_OWNER}-test debian repository
+XDEBREPO_HOST: ${REPO_SERVER_ADDRESS}
+XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
+XDEBREPO_USER: ${REPO_PUBLISH_USER}
+XDEBREPO_REPO: ${REPO_OWNER}-test
+XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test
+$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test)
+XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-test
+XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
+XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
+$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
 
-	# Create git repository secrets for ${REPO_OWNER}-release debian repository
-	XDEBREPO_HOST: ${REPO_SERVER_ADDRESS}
-	XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
-	XDEBREPO_USER: ${REPO_PUBLISH_USER}
-	XDEBREPO_REPO: ${REPO_OWNER}-release
-	XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release
-	$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release)
-	XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-release
-	XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
-	XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
-	$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
+# Create git repository secrets for ${REPO_OWNER}-release debian repository
+XDEBREPO_HOST: ${REPO_SERVER_ADDRESS}
+XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
+XDEBREPO_USER: ${REPO_PUBLISH_USER}
+XDEBREPO_REPO: ${REPO_OWNER}-release
+XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release
+$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release)
+XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-release
+XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
+XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
+$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
 
-	# 2. Add in github workflows action step
+# 2. Add in github workflows action step
 
-	- name: Publish a deb files
-	run: tools/github-publish
-	shell: bash
-	env:
-	XDEBREPO_HOST: \\\${{secrets.XDEBREPO_HOST}}
-	XDEBREPO_PORT: \\\${{secrets.XDEBREPO_PORT}}
-	XDEBREPO_USER: \\\${{secrets.XDEBREPO_USER}}
-	XDEBREPO_REPO: \\\${{secrets.XDEBREPO_REPO}}
-	XDEBREPO_PUBLISH_KEY: \\\${{secrets.XDEBREPO_PUBLISH_KEY}}
-	XDEBREPO_PUBLISH_PATH: \\\${{secrets.XDEBREPO_PUBLISH_PATH}}
-	XDEBREPO_PUBLISH_SCRIPT: \\\${{secrets.XDEBREPO_PUBLISH_SCRIPT}}
-	XDEBREPO_KNOWN_HOSTS: \\\${{secrets.XDEBREPO_KNOWN_HOSTS}}
+- name: Publish a deb files
+run: tools/github-publish
+shell: bash
+env:
+XDEBREPO_HOST: \\\${{secrets.XDEBREPO_HOST}}
+XDEBREPO_PORT: \\\${{secrets.XDEBREPO_PORT}}
+XDEBREPO_USER: \\\${{secrets.XDEBREPO_USER}}
+XDEBREPO_REPO: \\\${{secrets.XDEBREPO_REPO}}
+XDEBREPO_PUBLISH_KEY: \\\${{secrets.XDEBREPO_PUBLISH_KEY}}
+XDEBREPO_PUBLISH_PATH: \\\${{secrets.XDEBREPO_PUBLISH_PATH}}
+XDEBREPO_PUBLISH_SCRIPT: \\\${{secrets.XDEBREPO_PUBLISH_SCRIPT}}
+XDEBREPO_KNOWN_HOSTS: \\\${{secrets.XDEBREPO_KNOWN_HOSTS}}
 
-	# 3. Create script 'tools/github-publish'
-	export SSH_DIR=/root/.ssh/
-	mkdir -pv \\\${SSH_DIR}
-	echo "\\\${XDEBREPO_PUBLISH_KEY}" > \\\${SSH_DIR}/private.key
-	echo "\\\${XDEBREPO_KNOWN_HOSTS}" >> \\\${SSH_DIR}/known_hosts
-	sudo chmod 0700 \\\${SSH_DIR}/
-	sudo chmod 0600 \\\${SSH_DIR}/*
+# 3. Create script 'tools/github-publish'
+export SSH_DIR=/root/.ssh/
+mkdir -pv \\\${SSH_DIR}
+echo "\\\${XDEBREPO_PUBLISH_KEY}" > \\\${SSH_DIR}/private.key
+echo "\\\${XDEBREPO_KNOWN_HOSTS}" >> \\\${SSH_DIR}/known_hosts
+sudo chmod 0700 \\\${SSH_DIR}/
+sudo chmod 0600 \\\${SSH_DIR}/*
 
-	DEB_FILE="fixme.deb"
-	DEB_FILE_DISTRO="\\\$(lsb_release -cs)"
+DEB_FILE="fixme.deb"
+DEB_FILE_DISTRO="\\\$(lsb_release -cs)"
 
-	echo "Publish deb package: '\\\${DEB_FILE}'"
+echo "Publish deb package: '\\\${DEB_FILE}'"
 
-	# push on \\\${XDEBREPO_REPO}
-	#  1. copy file
-	scp -P \\\${XDEBREPO_PORT} -i \\\${SSH_DIR}/private.key \\\${DEB_FILE} \\
-		\\\${XDEBREPO_USER}@\\\${XDEBREPO_HOST}:\\\${DEBREPO_PUBLISH_PATH}
-	if [ \\\$? -ne 0 ]; then
-		echo "Publish deb package: '\\\${DEB_FILE}' scp FAIL"
-		exit 1
-	fi
+# push on \\\${XDEBREPO_REPO}
+#  step 1. copy file
+scp -P \\\${XDEBREPO_PORT} -i \\\${SSH_DIR}/private.key \\\${DEB_FILE} \\
+	\\\${XDEBREPO_USER}@\\\${XDEBREPO_HOST}:\\\${DEBREPO_PUBLISH_PATH}
+if [ \\\$? -ne 0 ]; then
+	echo "Publish deb package: '\\\${DEB_FILE}' scp FAIL"
+	exit 1
+fi
 
-	#  2. tell xdebrepo
-	ssh -p \\\${XDEBREPO_PORT} -i \\\${SSH_DIR}/private.key \\
-		\\\${XDEBREPO_USER}@$\\\{XDEBREPO_HOST} \\
-		\\\${XDEBREPO_PUBLISH_SCRIPT}/ \\\${XDEBREPO_REPO} \\
-		\\\${DEB_FILE_DISTRO} \\\$(basename \\\${DEB_FILE})
-	if [ \\\$? -ne 0 ]; then
-		echo "Publish deb package: '\\\${DEB_FILE}' ssh FAIL"
-		res=1
-		break
-	fi
+#  step 2. tell xdebrepo
+ssh -p \\\${XDEBREPO_PORT} -i \\\${SSH_DIR}/private.key \\
+	\\\${XDEBREPO_USER}@$\\\{XDEBREPO_HOST} \\
+	\\\${XDEBREPO_PUBLISH_SCRIPT}/ \\\${XDEBREPO_REPO} \\
+	\\\${DEB_FILE_DISTRO} \\\$(basename \\\${DEB_FILE})
+if [ \\\$? -ne 0 ]; then
+	echo "Publish deb package: '\\\${DEB_FILE}' ssh FAIL"
+	res=1
+	break
+fi
 
-	# 4. Test
+# 4. Test
 
+# ----- Manual example -----
 
+# Publish deb file
 
-	# ----- Manual example -----
+DEB_FILE="fixme.deb"
+DEB_FILE_DISTRO="\\\$(lsb_release -cs)"
 
-	# Publish deb file
+# push on ${REPO_OWNER}-devel
+#  step 1. copy file
+scp -P ${REPO_SERVER_SSH_PORT} -i ${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel \\\${DEB_FILE} \\\\
+	${REPO_PUBLISH_USER}@${REPO_SERVER_ADDRESS}:${REPO_DIR}/tmp/${REPO_OWNER}-devel
+#  step 2. tell xdebrepo
+ssh -p ${REPO_SERVER_SSH_PORT} -i ${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel \\\\
+	${REPO_PUBLISH_USER}@${REPO_SERVER_ADDRESS} \\\\
+	${REPO_CONF_DIR}/xdebrepo_publish ${REPO_OWNER}-devel \\\\
+	\\\${DEB_FILE_DISTRO} \\\$(basename \\\${DEB_FILE})
 
-	DEB_FILE="fixme.deb"
-	DEB_FILE_DISTRO="\\\$(lsb_release -cs)"
-
-	# push on ${REPO_OWNER}-devel
-	#  1. copy file
-	scp -P ${REPO_SERVER_SSH_PORT} -i ${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel \\\${DEB_FILE} \\\\
-		${REPO_PUBLISH_USER}@${REPO_SERVER_ADDRESS}:${REPO_DIR}/tmp/${REPO_OWNER}-devel
-	#  2. tell xdebrepo
-	ssh -p ${REPO_SERVER_SSH_PORT} -i ${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel \\\\
-		${REPO_PUBLISH_USER}@${REPO_SERVER_ADDRESS} \\\\
-		${REPO_CONF_DIR}/xdebrepo_publish ${REPO_OWNER}-devel \\\\
-		\\\${DEB_FILE_DISTRO} \\\$(basename \\\${DEB_FILE})
-
-	# See example scripts (ONLY FOR TEST!!!):
-	# ${PUBLISH_EXAMPLE_DEVEL}
-	# ${PUBLISH_EXAMPLE_TEST}
-	# ${PUBLISH_EXAMPLE_RELEASE}
+# See example scripts (ONLY FOR TEST!!!):
+# ${PUBLISH_EXAMPLE_DEVEL}
+# ${PUBLISH_EXAMPLE_TEST}
+# ${PUBLISH_EXAMPLE_RELEASE}
 
 
-	# ----- Use repository -----
+# ----- Use repository -----
 
-	# ON SERVER (as ${REPO_PUBLISH_USER} user)
+# ON SERVER (as ${REPO_PUBLISH_USER} user)
 
-	# generate clients ssh keys (or on client and copy public key to server)
-	export CLIENT_NAME=client_name
-	export REPO_LEVEL=devel # test, release
-	ssh-keygen ${SSH_KEYGEN_OPTS} \\\\
-		-C "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" \\\\
-		-f "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" -N ""
+# generate clients ssh keys (or on client and copy public key to server)
+export CLIENT_NAME=client_name
+export REPO_LEVEL=devel # test, release
+ssh-keygen ${SSH_KEYGEN_OPTS} \\\\
+	-C "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" \\\\
+	-f "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" -N ""
 
-	# add public key to repository (exec as user ${REPO_APT_USER})
-	xdebrepo ssh add_apt_key ${REPO_OWNER}-\\\${REPO_LEVEL} \\\\
-		\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}.pub
+# add public key to repository (exec as user ${REPO_APT_USER})
+xdebrepo ssh add_apt_key ${REPO_OWNER}-\\\${REPO_LEVEL} \\\\
+	\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}.pub
 
-	# copy "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" to client /root/.ssh/
+# copy "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" to client /root/.ssh/
 
-	# generate apt sources.list row for client (/etc/apt/sources.list.d/${REPO_OWNER}.list)
-	xdebrepo repo aptconf ${REPO_OWNER}-\\\${REPO_LEVEL}
+# generate apt sources.list row for client (/etc/apt/sources.list.d/${REPO_OWNER}.list)
+xdebrepo repo aptconf ${REPO_OWNER}-\\\${REPO_LEVEL}
 
 
-	# ON CLIENT
+# ON CLIENT
 
-	Create your own config file /etc/apt/apt.conf.d/30-ssh-transport and paste the following:
-	Dir::Bin::Methods::rsh "rsh";
-	Dir::Bin::Methods::ssh "ssh";
+Create your own config file /etc/apt/apt.conf.d/30-ssh-transport and paste the following:
+Dir::Bin::Methods::rsh "rsh";
+Dir::Bin::Methods::ssh "ssh";
 
-	export CLIENT_NAME=client_name
-	export REPO_LEVEL=devel # test, release
-	sudo cp "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" /root/.ssh/
+export CLIENT_NAME=client_name
+export REPO_LEVEL=devel # test, release
+sudo cp "\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}" /root/.ssh/
 
-	# Add to /root/.ssh/config
-	host ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo
-		hostname ${REPO_SERVER_ADDRESS}
-		user ${REPO_APT_USER}
-		port ${REPO_SERVER_SSH_PORT}
-		IdentityFile ~/.ssh/\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}
-		ForwardAgent no
-		ForwardX11 no
+# Add to /root/.ssh/config
+host ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo
+	hostname ${REPO_SERVER_ADDRESS}
+	user ${REPO_APT_USER}
+	port ${REPO_SERVER_SSH_PORT}
+	IdentityFile ~/.ssh/\\\${CLIENT_NAME}@${REPO_OWNER}-\\\${REPO_LEVEL}
+	ForwardAgent no
+	ForwardX11 no
 
-	# Add repository public key to apt
+# Add repository public key to apt
 
-	# one line
-	sudo ssh ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo "cat /repo/${REPO_OWNER}-\\\${REPO_LEVEL}/${REPO_OWNER}-\\\${REPO_LEVEL}.key" | sudo apt-key add
+# one line
+sudo ssh ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo "cat /repo/${REPO_OWNER}-\\\${REPO_LEVEL}/${REPO_OWNER}-\\\${REPO_LEVEL}.key" | sudo apt-key add
 
-	# two lines version
-	sudo scp ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo:${REPO_DIR}/${REPO_OWNER}-\\\${REPO_LEVEL}/${REPO_OWNER}-\\\${REPO_LEVEL}.key .
-	sudo apt-key add ${REPO_OWNER}-\\\${REPO_LEVEL}.key
+# two lines version
+sudo scp ${REPO_OWNER}-\\\${REPO_LEVEL}.xdebrepo:${REPO_DIR}/${REPO_OWNER}-\\\${REPO_LEVEL}/${REPO_OWNER}-\\\${REPO_LEVEL}.key .
+sudo apt-key add ${REPO_OWNER}-\\\${REPO_LEVEL}.key
 
-	sudo apt update
+sudo apt update
 
 IEOF
 
-	chmod 0600 ${INFO_FILE}
-	echo "See instructions in ${INFO_FILE}"
+chmod 0600 ${INFO_FILE}
+echo "See instructions in ${INFO_FILE}"
 
 EOF
 }
