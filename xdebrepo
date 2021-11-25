@@ -381,7 +381,7 @@ xdebrepo_repo_ls()
 	xdebrepo_conf_load
 
 	REPO_CONF_PATH="$(realpath "${XDEBREPO_CONF_PATH}")"
-	find ${REPO_CONF_PATH} -mindepth 2 -name '*xdebrepo.conf' -print0 | \
+	find ${REPO_CONF_PATH} -mindepth 2 -name '*xdebrepo.conf' -print0 2>/dev/null | \
 		xargs -0 -I{} dirname "{}" -z|xargs -0 -I{} basename "{}"
 }
 
@@ -494,7 +494,7 @@ xdebrepo_repo_list()
 		${REPREPRO} -b "${REPO_PATH}" list "${2}"
 		return
 	fi
-	for DIST_NAME in $(ls "${REPO_PATH}/dists"); do
+	for DIST_NAME in $(ls "${REPO_PATH}/dists" 2>/dev/null); do
 		${REPREPRO} -b "${REPO_PATH}" list ${DIST_NAME}
 	done
 }
@@ -667,6 +667,10 @@ xdebrepo_ssh_publish_restrict()
 		${SSH_ORIGINAL_COMMAND};
 	else
 		echo "ERROR Access Denied"
+# 		echo "" >> /tmp/xdebrepo_publish_restrict.log
+# 		echo "ERROR Access Denied" >> /tmp/xdebrepo_publish_restrict.log
+# 		echo "$SSH_ORIGINAL_COMMAND" >> /tmp/xdebrepo_publish_restrict.log
+		exit 1
 	fi
 }
 
@@ -681,6 +685,10 @@ xdebrepo_ssh_apt_restrict()
 		${SSH_ORIGINAL_COMMAND};
 	#else
 	#	echo "ERROR Access Denied"
+	# 	echo "" >> /tmp/xdebrepo_publish_restrict.log
+	# 	echo "ERROR Access Denied" >> /tmp/xdebrepo_publish_restrict.log
+	# 	echo "$SSH_ORIGINAL_COMMAND" >> /tmp/xdebrepo_publish_restrict.log
+	# 	exit 1
 	#fi
 }
 
