@@ -1,3 +1,30 @@
+#*******************************************************************************
+#*                                   XDebRepo                                  *
+#*-----------------------------------------------------------------------------*
+#*                                                                             *
+#* Copyright (c) 2022 Ivan Danov                                               *
+#*                                                                             *
+#* MIT License                                                                 *
+#*                                                                             *
+#* Permission is hereby granted, free of charge, to any person obtaining a     *
+#* copy of this software and associated documentation files (the "Software"),  *
+#* to deal in the Software without restriction, including without limitation   *
+#* the rights to use, copy, modify, merge, publish, distribute, sublicense,    *
+#* and/or sell copies of the Software, and to permit persons to whom the       *
+#* Software is furnished to do so, subject to the following conditions:        *
+#*                                                                             *
+#* The above copyright notice and this permission notice shall be included     *
+#* in all copies or substantial portions of the Software.                      *
+#*                                                                             *
+#* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS     *
+#* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, *
+#* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE *
+#* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER      *
+#* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING     *
+#* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER         *
+#* DEALINGS IN THE SOFTWARE.                                                   *
+#*******************************************************************************
+
 PROJECT = xdebrepo
 
 GIT_LAST_TAG := $(shell git describe --tags --abbrev=0 2>/dev/null)
@@ -100,7 +127,7 @@ endef # deb_begin
 
 ifneq ($(GIT2CL),)
 define deb_changelog
-	$(Q)$(GIT2CL) > $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)git --no-pager log --pretty --numstat --summary | git2cl > $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
 	$(Q)gzip -9 -n $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
 endef # deb_changelog
 else # GIT2CL
@@ -202,3 +229,10 @@ endef
 clean:
 	$(call clean_done_func)
 	@echo $(BEERSYM)$(PROJECT) cleaning done.
+
+check:
+	shellcheck xdebrepo
+	shellcheck xdebrepo.bash_completion
+	shellcheck xdebrepo_publish
+	shellcheck xdebrepo_create_devel_test_release
+	shellcheck xdebrepo-test.sh

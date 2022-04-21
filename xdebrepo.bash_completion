@@ -1,3 +1,32 @@
+#!/bin/bash
+
+#*******************************************************************************
+#*                                   XDebRepo                                  *
+#*-----------------------------------------------------------------------------*
+#*                                                                             *
+#* Copyright (c) 2022 Ivan Danov                                               *
+#*                                                                             *
+#* MIT License                                                                 *
+#*                                                                             *
+#* Permission is hereby granted, free of charge, to any person obtaining a     *
+#* copy of this software and associated documentation files (the "Software"),  *
+#* to deal in the Software without restriction, including without limitation   *
+#* the rights to use, copy, modify, merge, publish, distribute, sublicense,    *
+#* and/or sell copies of the Software, and to permit persons to whom the       *
+#* Software is furnished to do so, subject to the following conditions:        *
+#*                                                                             *
+#* The above copyright notice and this permission notice shall be included     *
+#* in all copies or substantial portions of the Software.                      *
+#*                                                                             *
+#* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS     *
+#* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, *
+#* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE *
+#* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER      *
+#* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING     *
+#* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER         *
+#* DEALINGS IN THE SOFTWARE.                                                   *
+#*******************************************************************************
+
 # bash xdebrepo completion
 
 _xdebrepo()
@@ -8,37 +37,37 @@ _xdebrepo()
 	COMPREPLY=()
 	cur=${COMP_WORDS[COMP_CWORD]}
 
-	if [ $COMP_CWORD -eq 1 ]; then
+	if [ "$COMP_CWORD" -eq 1 ]; then
 		conns="init key repo ssh"
-		COMPREPLY=( $(compgen -W "$conns" $cur) )
+		mapfile -t COMPREPLY < <(compgen -W "$conns" "$cur")
 		return 0
 	fi
 
-	if [ $COMP_CWORD -eq 2 ]; then
+	if [ "$COMP_CWORD" -eq 2 ]; then
 		if [ "${COMP_WORDS[1]}" == "init" ]; then
-			if [ $COMP_CWORD -le 3 ]; then
+			if [ "$COMP_CWORD" -le 3 ]; then
 				_filedir -d
 			fi
 			return 0
 		fi
 		if [ "${COMP_WORDS[1]}" == "key" ]; then
 			conns="gen ls list"
-			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			mapfile -t COMPREPLY < <(compgen -W "$conns" "$cur")
 			return 0
 		fi
 		if [ "${COMP_WORDS[1]}" == "repo" ]; then
 			conns="create destroy ls aptconf pubkey add del list dists ssh_config"
-			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			mapfile -t COMPREPLY < <(compgen -W "$conns" "$cur")
 			return 0
 		fi
 		if [ "${COMP_WORDS[1]}" == "ssh" ]; then
 			conns="add_publish_key add_apt_key"
-			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			mapfile -t COMPREPLY < <(compgen -W "$conns" "$cur")
 			return 0
 		fi
 		return 0
 	fi
-	if [ $COMP_CWORD -eq 3 ]; then
+	if [ "$COMP_CWORD" -eq 3 ]; then
 		if [ "${COMP_WORDS[1]}" == "key" ]; then
 			if [ "${COMP_WORDS[2]}" != "list" ]; then
 				return 0
@@ -51,17 +80,17 @@ _xdebrepo()
 				return 0
 			fi
 			conns=$(xdebrepo repo ls)
-			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			mapfile -t COMPREPLY < <(compgen -W "$conns" "$cur")
 			return 0
 		fi
 		if [ "${COMP_WORDS[1]}" == "ssh" ]; then
 			conns=$(xdebrepo repo ls)
-			COMPREPLY=( $(compgen -W "$conns" $cur) )
+			mapfile -t COMPREPLY < <(compgen -W "$conns" "$cur")
 			return 0
 		fi
 		return 0
 	fi
-	if [ $COMP_CWORD -eq 4 ]; then
+	if [ "$COMP_CWORD" -eq 4 ]; then
 		if [ "${COMP_WORDS[1]}" == "ssh" ]; then
 			_filedir
 			return 0
@@ -72,10 +101,10 @@ _xdebrepo()
 		if [ "${COMP_WORDS[2]}" != "list" ]; then
 			return 0
 		fi
-		conns=$(xdebrepo repo dists ${COMP_WORDS[3]})
+		conns=$(xdebrepo repo dists "${COMP_WORDS[3]}")
 		# source ${XDEBREPO_CONF_DIR_BASE}/etc/xdebrepo/xdebrepo.conf
 		# conns=$(\cat ${XDEBREPO_PATH}/${COMP_WORDS[3]}/conf/distributions 2>/dev/null| awk '/Codename:/ {printf "%s\n", $2}')
-		COMPREPLY=( $(compgen -W "$conns" $cur) )
+		mapfile -t COMPREPLY < <(compgen -W "$conns" "$cur")
 		return 0
 	fi
 	return 0

@@ -1,5 +1,32 @@
 #!/bin/bash
 
+#*******************************************************************************
+#*                                   XDebRepo                                  *
+#*-----------------------------------------------------------------------------*
+#*                                                                             *
+#* Copyright (c) 2022 Ivan Danov                                               *
+#*                                                                             *
+#* MIT License                                                                 *
+#*                                                                             *
+#* Permission is hereby granted, free of charge, to any person obtaining a     *
+#* copy of this software and associated documentation files (the "Software"),  *
+#* to deal in the Software without restriction, including without limitation   *
+#* the rights to use, copy, modify, merge, publish, distribute, sublicense,    *
+#* and/or sell copies of the Software, and to permit persons to whom the       *
+#* Software is furnished to do so, subject to the following conditions:        *
+#*                                                                             *
+#* The above copyright notice and this permission notice shall be included     *
+#* in all copies or substantial portions of the Software.                      *
+#*                                                                             *
+#* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS     *
+#* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, *
+#* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE *
+#* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER      *
+#* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING     *
+#* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER         *
+#* DEALINGS IN THE SOFTWARE.                                                   *
+#*******************************************************************************
+
 # create devel/test/release debian repos
 
 # -u  Treat unset variables as an error when substituting.
@@ -27,7 +54,8 @@ export PUBLISH_EXAMPLE_DEVEL=/${REPO_PUBLISH_USER}/${REPO_OWNER}-devel-publish.b
 export PUBLISH_EXAMPLE_TEST=/${REPO_PUBLISH_USER}/${REPO_OWNER}-test-publish.bash
 export PUBLISH_EXAMPLE_RELEASE=/${REPO_PUBLISH_USER}/${REPO_OWNER}-release-publish.bash
 
-export SCRIPT_PATH=$(realpath $(dirname $0))
+SCRIPT_PATH=$(realpath "$(dirname "$0")")
+export SCRIPT_PATH
 
 export REPO_CONF_DIR=/${REPO_PUBLISH_USER}
 export XDEBREPO_CONF_DIR_BASE=/${REPO_PUBLISH_USER}
@@ -38,81 +66,69 @@ export XDEBREPO_CONF_DIR_BASE=/${REPO_PUBLISH_USER}
 xdebrepo_create_users_groups_dirs()
 {
 echo "------ Create group ${REPO_GROUP}"
-sudo groupadd -r ${REPO_GROUP}
-if [ $? -ne 0 ]; then
+if sudo groupadd -r "${REPO_GROUP}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 
 echo "------ Add user ${REPO_PUBLISH_USER}"
-sudo useradd -r -c "${REPO_OWNER} debian repository publisher" \
-	-d /${REPO_PUBLISH_USER} -M -N -g ${REPO_GROUP} \
-	-s /bin/bash ${REPO_PUBLISH_USER}
-if [ $? -ne 0 ]; then
+if sudo useradd -r -c "${REPO_OWNER} debian repository publisher" \
+	-d "/${REPO_PUBLISH_USER}" -M -N -g "${REPO_GROUP}" \
+	-s /bin/bash "${REPO_PUBLISH_USER}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 echo "------ Create dir /${REPO_PUBLISH_USER}"
-sudo mkdir /${REPO_PUBLISH_USER}
-if [ $? -ne 0 ]; then
+if sudo mkdir "/${REPO_PUBLISH_USER}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 echo "------ Set owner of dir /${REPO_PUBLISH_USER}"
-sudo chown ${REPO_PUBLISH_USER}.${REPO_GROUP} /${REPO_PUBLISH_USER}
-if [ $? -ne 0 ]; then
+if sudo chown "${REPO_PUBLISH_USER}"."${REPO_GROUP}" "/${REPO_PUBLISH_USER}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 echo "------ Set mode of dir /${REPO_PUBLISH_USER}"
-sudo chmod 0750 /${REPO_PUBLISH_USER}
-if [ $? -ne 0 ]; then
+if sudo chmod 0750 "/${REPO_PUBLISH_USER}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 
 echo "------ Add user ${REPO_APT_USER}"
-sudo useradd -r -c "${REPO_OWNER} debian repository apt reader" \
-	-d /${REPO_APT_USER} -M -N -g ${REPO_GROUP} \
-	-s /bin/bash ${REPO_APT_USER}
-if [ $? -ne 0 ]; then
+if sudo useradd -r -c "${REPO_OWNER} debian repository apt reader" \
+	-d "/${REPO_APT_USER}" -M -N -g "${REPO_GROUP}" \
+	-s /bin/bash "${REPO_APT_USER}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 echo "------ Create dir /${REPO_APT_USER}"
-sudo mkdir /${REPO_APT_USER}
-if [ $? -ne 0 ]; then
+if sudo mkdir "/${REPO_APT_USER}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 echo "------ Set owner of dir /${REPO_APT_USER}"
-sudo chown ${REPO_APT_USER}.${REPO_GROUP} /${REPO_APT_USER}
-if [ $? -ne 0 ]; then
+if sudo chown "${REPO_APT_USER}"."${REPO_GROUP}" "/${REPO_APT_USER}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 echo "------ Set mode of dir /${REPO_APT_USER}"
-sudo chmod 0750 /${REPO_APT_USER}
-if [ $? -ne 0 ]; then
+if sudo chmod 0750 "/${REPO_APT_USER}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 
 echo "------ Create directory for repository ${REPO_DIR}"
-sudo mkdir ${REPO_DIR}
-if [ $? -ne 0 ]; then
+if sudo mkdir "${REPO_DIR}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 echo "------ Set owner of repository ${REPO_DIR}"
-sudo chown ${REPO_PUBLISH_USER}.${REPO_GROUP} ${REPO_DIR}
-if [ $? -ne 0 ]; then
+if sudo chown "${REPO_PUBLISH_USER}"."${REPO_GROUP}" "${REPO_DIR}"; then
 	echo "------ ERROR"
 	exit 1
 fi
 echo "------ Set mode of repository ${REPO_DIR}"
-sudo chmod 0775 ${REPO_DIR}
-if [ $? -ne 0 ]; then
+if sudo chmod 0775 "${REPO_DIR}"; then
 	echo "------ ERROR"
 	exit 1
 fi
@@ -120,7 +136,7 @@ fi
 # generate .bashrc for users
 
 # exec as user ${REPO_APT_USER}
-sudo su ${REPO_APT_USER} << EOF
+sudo su "${REPO_APT_USER}" << EOF
 
 export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
 export REPO_APT_USER=${REPO_APT_USER}
@@ -135,7 +151,7 @@ fi
 EOF
 
 # exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
-sudo su ${REPO_PUBLISH_USER} << EOF
+sudo su "${REPO_PUBLISH_USER}" << EOF
 
 export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
 export REPO_DIR=${REPO_DIR}
@@ -154,7 +170,7 @@ EOF
 xdebrepo_create_repos()
 {
 # exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
-sudo su ${REPO_PUBLISH_USER} << EOF
+sudo su "${REPO_PUBLISH_USER}" << EOF
 
 export REPO_CONF_DIR=${REPO_CONF_DIR}
 export XDEBREPO_CONF_DIR_BASE=${XDEBREPO_CONF_DIR_BASE}
@@ -337,6 +353,27 @@ if [ \$? -ne 0 ]; then
 	exit 1
 fi
 EOF
+
+sudo bash << EOF
+echo "------ Export devel debian repository public key gpg"
+apt-key --keyring /repo/${REPO_OWNER}-devel/${REPO_OWNER}-devel.gpg \
+	add /repo/${REPO_OWNER}-devel/${REPO_OWNER}-devel.key
+chown ${REPO_PUBLISH_USER}.${REPO_GROUP} /repo/${REPO_OWNER}-devel/${REPO_OWNER}-devel.gpg
+rm /repo/${REPO_OWNER}-devel/${REPO_OWNER}-devel.gpg~
+
+echo "------ Export test debian repository public key gpg"
+apt-key --keyring /repo/${REPO_OWNER}-test/${REPO_OWNER}-test.gpg \
+	add /repo/${REPO_OWNER}-test/${REPO_OWNER}-test.key
+chown ${REPO_PUBLISH_USER}.${REPO_GROUP} /repo/${REPO_OWNER}-test/${REPO_OWNER}-test.gpg
+rm /repo/${REPO_OWNER}-test/${REPO_OWNER}-test.gpg~
+
+echo "------ Export release debian repository public key gpg"
+apt-key --keyring /repo/${REPO_OWNER}-release/${REPO_OWNER}-release.gpg \
+	add /repo/${REPO_OWNER}-release/${REPO_OWNER}-release.key
+chown ${REPO_PUBLISH_USER}.${REPO_GROUP} /repo/${REPO_OWNER}-release/${REPO_OWNER}-release.gpg
+rm /repo/${REPO_OWNER}-release/${REPO_OWNER}-release.gpg~
+
+EOF
 }
 
 
@@ -347,7 +384,7 @@ xdebrepo_create_publish_script()
 {
 
 # exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
-sudo su ${REPO_PUBLISH_USER} << EOF
+sudo su "${REPO_PUBLISH_USER}" << EOF
 
 cat > ${1} << IEOF
 #!/bin/bash
@@ -369,10 +406,10 @@ export XDEBREPO_HOST=${REPO_SERVER_ADDRESS}
 export XDEBREPO_PORT=${REPO_SERVER_SSH_PORT}
 export XDEBREPO_USER=${REPO_PUBLISH_USER}
 export XDEBREPO_REPO=${REPO_OWNER}-${2}
-export XDEBREPO_PUBLISH_KEY="$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-${2})"
+export XDEBREPO_PUBLISH_KEY="$(cat "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-${2}")"
 export XDEBREPO_PUBLISH_PATH="${REPO_DIR}/tmp/${REPO_OWNER}-${2}"
 export XDEBREPO_PUBLISH_SCRIPT="/${REPO_PUBLISH_USER}/xdebrepo_publish"
-export XDEBREPO_KNOWN_HOSTS="$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)"
+export XDEBREPO_KNOWN_HOSTS="$(ssh-keyscan -p "${REPO_SERVER_SSH_PORT}" -H "${REPO_SERVER_ADDRESS}" 2>/dev/null)"
 # GITHUB SECRETS end
 
 echo "\\\${XDEBREPO_PUBLISH_KEY}" > \\\${SSH_DIR}/xdebrepo-temp-private.key
@@ -422,12 +459,12 @@ EOF
 xdebrepo_create_help_files()
 {
 
-xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_DEVEL} devel
-xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_TEST} test
-xdebrepo_create_publish_script ${PUBLISH_EXAMPLE_RELEASE} release
+xdebrepo_create_publish_script "${PUBLISH_EXAMPLE_DEVEL}" devel
+xdebrepo_create_publish_script "${PUBLISH_EXAMPLE_TEST}" test
+xdebrepo_create_publish_script "${PUBLISH_EXAMPLE_RELEASE}" release
 
 # exec as user ${REPO_PUBLISH_USER} from home dir (sudo su ${REPO_PUBLISH_USER})
-sudo su ${REPO_PUBLISH_USER} << EOF
+sudo su "${REPO_PUBLISH_USER}" << EOF
 
 cat >> ${INFO_FILE} << IEOF
 
@@ -441,11 +478,11 @@ XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
 XDEBREPO_USER: ${REPO_PUBLISH_USER}
 XDEBREPO_REPO: ${REPO_OWNER}-devel
 XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel
-$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel)
+$(cat "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-devel")
 XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-devel
 XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
 XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
-$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
+$(ssh-keyscan -p "${REPO_SERVER_SSH_PORT}" -H "${REPO_SERVER_ADDRESS}" 2>/dev/null)
 
 # Create git repository secrets for ${REPO_OWNER}-test debian repository
 XDEBREPO_HOST: ${REPO_SERVER_ADDRESS}
@@ -453,11 +490,11 @@ XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
 XDEBREPO_USER: ${REPO_PUBLISH_USER}
 XDEBREPO_REPO: ${REPO_OWNER}-test
 XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test
-$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test)
+$(cat "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-test")
 XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-test
 XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
 XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
-$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
+$(ssh-keyscan -p "${REPO_SERVER_SSH_PORT}" -H "${REPO_SERVER_ADDRESS}" 2>/dev/null)
 
 # Create git repository secrets for ${REPO_OWNER}-release debian repository
 XDEBREPO_HOST: ${REPO_SERVER_ADDRESS}
@@ -465,11 +502,11 @@ XDEBREPO_PORT: ${REPO_SERVER_SSH_PORT}
 XDEBREPO_USER: ${REPO_PUBLISH_USER}
 XDEBREPO_REPO: ${REPO_OWNER}-release
 XDEBREPO_PUBLISH_KEY: # from file ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release
-$(cat ${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release)
+$(cat "${REPO_CONF_DIR}/${REPO_PUBLISHER_NAME}@${REPO_OWNER}-release")
 XDEBREPO_PUBLISH_PATH: ${REPO_DIR}/tmp/${REPO_OWNER}-release
 XDEBREPO_PUBLISH_SCRIPT: /${REPO_PUBLISH_USER}/xdebrepo_publish
 XDEBREPO_KNOWN_HOSTS: # ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null
-$(ssh-keyscan -p ${REPO_SERVER_SSH_PORT} -H ${REPO_SERVER_ADDRESS} 2>/dev/null)
+$(ssh-keyscan -p "${REPO_SERVER_SSH_PORT}" -H "${REPO_SERVER_ADDRESS}" 2>/dev/null)
 
 # 2. Add in github workflows action step
 
